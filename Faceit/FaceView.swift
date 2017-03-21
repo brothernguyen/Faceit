@@ -8,10 +8,21 @@
 
 import UIKit
 
+@IBDesignable
 class FaceView: UIView {
     
-    var scale: CGFloat = 0.9
-    var mouthCurvature: Double = 1.0
+    @IBInspectable
+    var scale: CGFloat = 0.9 { didSet { setNeedsDisplay() } }
+    @IBInspectable
+    var mouthCurvature: Double = 1.0 { didSet { setNeedsDisplay() } }
+    @IBInspectable
+    var eyesOpen: Bool = true { didSet { setNeedsDisplay() } }
+    @IBInspectable
+    var eyeBrownTilt: Double = 0.0 { didSet { setNeedsDisplay() } }
+    @IBInspectable
+    var color: UIColor = UIColor.blue { didSet { setNeedsDisplay() } }
+    @IBInspectable
+    var lineWidth:CGFloat = 5.0 { didSet { setNeedsDisplay() } }      
     
     private var skullRadius: CGFloat {
         return min(bounds.size.width, bounds.size.height) / 2 * scale
@@ -21,12 +32,23 @@ class FaceView: UIView {
         return CGPoint(x: bounds.midX, y: bounds.midY)
     }
     
+    func changeScale(recognizer: UIPinchGestureRecognizer) {
+        switch recognizer.state {
+        case .changed, .ended:
+            scale *= recognizer.scale
+            recognizer.scale = 1.0
+        default:
+            break
+        }
+    }
+    
     private struct Ratios {
         static let SkullRadiusToEyeOffset: CGFloat = 3
         static let SkullRadiusToEyeRadius: CGFloat = 10
         static let SkullRadiusToMouthWidth: CGFloat = 1
         static let SkullRadiusToMouthHeight: CGFloat = 3
         static let SkullRadiusToMouthOffset: CGFloat = 3
+        static let SkullRadiusToBrownOffset: CGFloat = 3
     }
     
     private enum Eye {
@@ -42,7 +64,7 @@ class FaceView: UIView {
             endAngle: CGFloat(2*M_PI),
             clockwise: false
         )
-        path.lineWidth = 5.0
+        path.lineWidth = lineWidth
         return path
     }
     
@@ -50,17 +72,29 @@ class FaceView: UIView {
         let eyeOffset = skullRadius / Ratios.SkullRadiusToEyeOffset
         var eyeCenter = skullCenter
         eyeCenter.y -= eyeOffset
+        
         switch eye {
         case .Left: eyeCenter.x -= eyeOffset
         case .Right: eyeCenter.x += eyeOffset
         }
+        
         return eyeCenter
     }
     
     private func pathForEye(eye: Eye) -> UIBezierPath {
+        
         let eyeRadius = skullRadius / Ratios.SkullRadiusToEyeRadius
         let eyeCenter = getEyeCenter(eye: eye)
-        return pathForCircleCenteredAtPoint(midPoint: eyeCenter, withRadius: eyeRadius)
+        
+        if eyesOpen {
+            return pathForCircleCenteredAtPoint(midPoint: eyeCenter, withRadius: eyeRadius)
+        } else {
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: eyeCenter.x - eyeRadius, y: eyeCenter.y))
+            path.addLine(to: CGPoint(x: eyeCenter.x + eyeRadius, y: eyeCenter.y))
+            path.lineWidth = lineWidth
+            return path
+        }
     }
     
     private func pathForMouth() -> UIBezierPath {
@@ -80,14 +114,35 @@ class FaceView: UIView {
         let path = UIBezierPath()
         path.move(to: start)
         path.addCurve(to: end, controlPoint1: cp1, controlPoint2: cp2)
-        path.lineWidth = 5.0
+        path.lineWidth = lineWidth
         
         return path
         
     }
     
+    private func pathForBrown(eye: Eye) -> UIBezierPath {
+        var tilt = eyeBrownTilt
+        
+        switch eye {
+        case .Left: tilt *= -1.0
+        case .Right: break
+        }
+        
+        var brownCenter = getEyeCenter(eye: eye)
+        brownCenter.y -= skullRadius / Ratios.SkullRadiusToBrownOffset
+        let eyeRadius = skullRadius / Ratios.SkullRadiusToEyeRadius
+        let tiltOffset = CGFloat(max(-1, min(tilt, 1))) * eyeRadius / 2
+        let brownStart = CGPoint(x: brownCenter.x - eyeRadius, y: brownCenter.x - tiltOffset)
+        let brownEnd = CGPoint(x: brownCenter.x + eyeRadius, y: brownCenter.y + tiltOffset)
+        let path = UIBezierPath()
+        path.move(to: brownStart)
+        path.addLine(to: brownEnd)
+        path.lineWidth = lineWidth
+        return path
+    }
+    
     override func draw(_ rect: CGRect) {
-        UIColor.blue.set()
+        color.set()
         pathForCircleCenteredAtPoint(midPoint: skullCenter, withRadius: skullRadius).stroke()
         pathForEye(eye: .Left).stroke()
         pathForEye(eye: .Right).stroke()
