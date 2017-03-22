@@ -21,39 +21,43 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="3vM-TC-TWK" customClass="FaceView" customModule="Faceit" customModuleProvider="target">
+                            <view contentMode="redraw" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3vM-TC-TWK" customClass="FaceView" customModule="Faceit" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <gestureRecognizers/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="scale">
                                         <real key="value" value="0.5"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="mouthCurvature">
-                                        <real key="value" value="1"/>
+                                        <real key="value" value="-1"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="lineWidth">
                                         <real key="value" value="3"/>
                                     </userDefinedRuntimeAttribute>
                                     <userDefinedRuntimeAttribute type="number" keyPath="eyeBrownTilt">
-                                        <real key="value" value="1"/>
+                                        <real key="value" value="-1"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="boolean" keyPath="eyesOpen" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="3vM-TC-TWK" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="1x6-WE-USD"/>
-                            <constraint firstItem="3vM-TC-TWK" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="gRO-oM-262"/>
-                            <constraint firstAttribute="trailing" secondItem="3vM-TC-TWK" secondAttribute="trailing" id="vyd-n8-0k1"/>
-                            <constraint firstItem="3vM-TC-TWK" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="zvO-Rj-fOu"/>
-                        </constraints>
+                        <gestureRecognizers/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="8nr-9A-NYk" appends="YES" id="efb-w0-QLc"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="faceView" destination="3vM-TC-TWK" id="Brt-Yl-2go"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="8nr-9A-NYk">
+                    <connections>
+                        <action selector="toggleEyes:" destination="BYZ-38-t0r" id="Jlr-7Q-i6L"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="116" y="122.78860569715144"/>
         </scene>

@@ -35,7 +35,7 @@ class FaceView: UIView {
     func changeScale(recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
         case .changed, .ended:
-            scale *= recognizer.scale
+            scale *= recognizer.scale            
             recognizer.scale = 1.0
         default:
             break
@@ -48,7 +48,7 @@ class FaceView: UIView {
         static let SkullRadiusToMouthWidth: CGFloat = 1
         static let SkullRadiusToMouthHeight: CGFloat = 3
         static let SkullRadiusToMouthOffset: CGFloat = 3
-        static let SkullRadiusToBrownOffset: CGFloat = 3
+        static let SkullRadiusToBrownOffset: CGFloat = 5
     }
     
     private enum Eye {
@@ -132,7 +132,7 @@ class FaceView: UIView {
         brownCenter.y -= skullRadius / Ratios.SkullRadiusToBrownOffset
         let eyeRadius = skullRadius / Ratios.SkullRadiusToEyeRadius
         let tiltOffset = CGFloat(max(-1, min(tilt, 1))) * eyeRadius / 2
-        let brownStart = CGPoint(x: brownCenter.x - eyeRadius, y: brownCenter.x - tiltOffset)
+        let brownStart = CGPoint(x: brownCenter.x - eyeRadius, y: brownCenter.y - tiltOffset)
         let brownEnd = CGPoint(x: brownCenter.x + eyeRadius, y: brownCenter.y + tiltOffset)
         let path = UIBezierPath()
         path.move(to: brownStart)
@@ -147,7 +147,8 @@ class FaceView: UIView {
         pathForEye(eye: .Left).stroke()
         pathForEye(eye: .Right).stroke()
         pathForMouth().stroke()
-        
+        pathForBrown(eye: .Left).stroke()
+        pathForBrown(eye: .Right).stroke()
     }
     
     
